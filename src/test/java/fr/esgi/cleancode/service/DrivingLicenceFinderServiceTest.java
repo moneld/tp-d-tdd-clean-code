@@ -89,7 +89,7 @@ class DrivingLicenceFinderServiceTest {
         ResourceNotFoundException thrown = assertThrows(
                 ResourceNotFoundException.class,
                 () -> {
-                    service.findById(DRIVING_NOT_FOUND_ID);
+                    service.removePointOnDrivingLicence(DRIVING_NOT_FOUND_ID,2);
                 }
         );
         assertTrue(thrown.getMessage().contains("Driving licence not found"));
