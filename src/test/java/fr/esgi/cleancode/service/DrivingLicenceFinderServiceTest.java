@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DrivingLicenceFinderServiceTest {
@@ -37,22 +37,25 @@ class DrivingLicenceFinderServiceTest {
     void should_find() {
         DrivingLicence drivingLicence = DrivingLicence.builder()
                                                         .id(DRIVING_ID)
-                                                        .driverSocialSecurityNumber(socialSecurityNumber)
                                                         .build();
+        when(database.findById(DRIVING_ID)).thenReturn(Optional.of(drivingLicence));
 
-        when(database.save(DRIVING_ID,drivingLicence));
+        Optional<DrivingLicence> retrievedDrivingLicense = service.findById(DRIVING_ID);
 
-        assertThat(
-                database.findById(DRIVING_ID)
-                        .get()
-                        .getDriverSocialSecurityNumber()
-                )
-                .isSameAs(socialSecurityNumber);
+        assertThat(retrievedDrivingLicense).containsSame(drivingLicence);
+
+        verify(database).findById(DRIVING_ID);
+        verifyNoMoreInteractions(database);
+
+
+
+
     }
 
     @Test
     void should_not_find() {
-        when(database.findById(DRIVING_ID))
+
+        when(service.findById(DRIVING_ID))
                 .thenReturn(Optional.empty());
         Optional<DrivingLicence> drivingLicenceNotExist = service.findById(DRIVING_ID);
         assertThat(drivingLicenceNotExist).isEmpty();
